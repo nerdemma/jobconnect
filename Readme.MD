@@ -6,7 +6,7 @@
   ![TypeScript](https://img.shields.io/badge/TypeScript-5.4.5-blue?style=for-the-badge&logo=typescript)
   ![Node.js](https://img.shields.io/badge/Node.js-v20.x-green?style=for-the-badge&logo=node.js)
   ![Express.js](https://img.shields.io/badge/Express.js-4.x-lightgrey?style=for-the-badge&logo=express)
-  ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+  ![License](https://img.shields.io/badge/License-APACHE-red?style=for-the-badge)
 
   <p align="center">
     <b>Plataforma de postulación laboral con preservación estricta de privacidad impulsada por Zero-Knowledge Proofs (ZKP) en Midnight Network.</b>
