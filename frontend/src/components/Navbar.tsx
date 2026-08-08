@@ -22,7 +22,7 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link to="/" className="font-mono text-sm tracking-[0.3em] uppercase text-foreground">
-          chain<span className="text-muted-foreground">/work</span>
+          job<span className="text-muted-foreground">connect</span>
         </Link>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" aria-label="Cambiar tema" onClick={toggle}>
