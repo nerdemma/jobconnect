@@ -4,7 +4,7 @@ import { _ as Link, f as createRouter, g as createRootRouteWithContext, h as cre
 import { t as Toaster } from "../_libs/sonner.mjs";
 import { t as QueryClient } from "../_libs/tanstack__query-core.mjs";
 import { t as QueryClientProvider } from "../_libs/tanstack__react-query.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-C83kSQU-.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-BOVk7mIV.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var styles_default = "/assets/styles-8IJIzBOY.css";
@@ -172,7 +172,7 @@ function RootComponent() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster$1, { position: "top-center" })]
 	});
 }
-var $$splitComponentImporter$3 = () => import("./routes-BqLcrdYp.mjs");
+var $$splitComponentImporter$3 = () => import("./routes-ByxqIVV8.mjs");
 var Route$3 = createFileRoute("/")({
 	head: () => ({ meta: [
 		{ title: "chain/work — Empleo web3 minimalista" },
@@ -191,7 +191,7 @@ var Route$3 = createFileRoute("/")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$3, "component")
 });
-var $$splitComponentImporter$2 = () => import("./empleado-CH_mOY4W.mjs");
+var $$splitComponentImporter$2 = () => import("./empleado-DaqXP_Yw.mjs");
 var Route$2 = createFileRoute("/empleado")({
 	head: () => ({ meta: [
 		{ title: "Registro de talento — chain/work" },
@@ -210,7 +210,7 @@ var Route$2 = createFileRoute("/empleado")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$2, "component")
 });
-var $$splitComponentImporter$1 = () => import("./empleos-BxXoALwH.mjs");
+var $$splitComponentImporter$1 = () => import("./empleos-DCQeH0oD.mjs");
 var Route$1 = createFileRoute("/empleos")({
 	head: () => ({ meta: [
 		{ title: "Publicaciones — chain/work" },
@@ -229,7 +229,7 @@ var Route$1 = createFileRoute("/empleos")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-var $$splitComponentImporter = () => import("./empresario-CnWI07JG.mjs");
+var $$splitComponentImporter = () => import("./empresario-Bt7oUQNv.mjs");
 var Route = createFileRoute("/empresario")({
 	head: () => ({ meta: [
 		{ title: "Publicar anuncio — chain/work" },

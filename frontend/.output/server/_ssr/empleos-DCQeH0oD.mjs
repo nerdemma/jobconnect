@@ -3,9 +3,9 @@ import { o as require_jsx_runtime, s as require_react } from "../_libs/@radix-ui
 import { _ as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as toast } from "../_libs/sonner.mjs";
 import { c as Building2, i as MapPin, o as Clock } from "../_libs/lucide-react.mjs";
-import { c as formatMoney, i as Navbar, l as getApplied, o as addApplied, p as useStore, t as Button, u as getEmployee } from "./Navbar-Cs6M6wYA.mjs";
+import { c as formatMoney, i as Navbar, l as getApplied, o as addApplied, p as useStore, t as Button, u as getEmployee } from "./Navbar-DSxz39xl.mjs";
 import { r as fetchJobs, t as applyToJob } from "./api-CmYpQ1cc.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/empleos-BxXoALwH.js
+//#region node_modules/.nitro/vite/services/ssr/assets/empleos-DCQeH0oD.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function EmpleosPage() {

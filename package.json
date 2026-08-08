@@ -8,7 +8,8 @@
     "build:contract": "compactc.bin contracts/JobBoard.compact build/",
     "test:contract": "tsx contracts/test-contract.ts",
     "start:backend": "tsx src/server.ts",
-    "start:frontend": "npm --prefix frontend run dev"
+    "start:frontend": "npm --prefix frontend run dev",
+    "start:all": "bash scripts/start-all.sh"
   },
   "keywords": [
     "midnight",

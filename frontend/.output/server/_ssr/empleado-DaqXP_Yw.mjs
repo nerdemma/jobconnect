@@ -2,12 +2,32 @@ import { n as __toESM } from "../_runtime.mjs";
 import { o as require_jsx_runtime, s as require_react } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { v as useNavigate } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { d as saveEmployee, i as Navbar, p as useStore, t as Button, u as getEmployee } from "./Navbar-Cs6M6wYA.mjs";
-import { n as Label, r as StackPicker, t as Input } from "./label-KB_SKN9C.mjs";
+import { d as saveEmployee, i as Navbar, p as useStore, s as cn, t as Button, u as getEmployee } from "./Navbar-DSxz39xl.mjs";
+import { n as Label, r as StackPicker, t as Input } from "./label-CV1vU9ZZ.mjs";
 import { i as postEmployee } from "./api-CmYpQ1cc.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/empleado-CH_mOY4W.js
+//#region node_modules/.nitro/vite/services/ssr/assets/empleado-DaqXP_Yw.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
+var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+		className: cn("flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm", className),
+		ref,
+		...props
+	});
+});
+Textarea.displayName = "Textarea";
+function isValidGithubUrl(value) {
+	const trimmed = value.trim();
+	if (!trimmed) return false;
+	try {
+		const parsed = new URL(trimmed);
+		const hostname = parsed.hostname.toLowerCase();
+		const segments = parsed.pathname.split("/").filter(Boolean);
+		return (hostname === "github.com" || hostname === "www.github.com") && segments.length >= 1;
+	} catch {
+		return false;
+	}
+}
 function EmpleadoPage() {
 	const navigate = useNavigate();
 	const saved = useStore(() => getEmployee(), null);
@@ -17,7 +37,9 @@ function EmpleadoPage() {
 		email: "",
 		phone: "",
 		dni: "",
-		address: ""
+		address: "",
+		about: "",
+		github: ""
 	});
 	const set = (k) => (e) => setForm((f) => ({
 		...f,
@@ -27,6 +49,10 @@ function EmpleadoPage() {
 		e.preventDefault();
 		if (stack.length === 0) {
 			toast.error("Seleccioná al menos una tecnología");
+			return;
+		}
+		if (!isValidGithubUrl(form.github)) {
+			toast.error("Ingresá una URL válida de GitHub, por ejemplo https://github.com/usuario");
 			return;
 		}
 		try {
@@ -106,6 +132,31 @@ function EmpleadoPage() {
 											required: true,
 											value: form.address,
 											onChange: set("address")
+										})
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "sm:col-span-2",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, {
+										label: "About",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
+											required: true,
+											rows: 4,
+											placeholder: "Contá tu experiencia, intereses o lo que te gustaría trabajar",
+											value: form.about,
+											onChange: set("about")
+										})
+									})
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "sm:col-span-2",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, {
+										label: "Enlace a GitHub",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											required: true,
+											type: "url",
+											value: form.github,
+											onChange: set("github")
 										})
 									})
 								})

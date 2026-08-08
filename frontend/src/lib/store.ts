@@ -6,6 +6,8 @@ export type Employee = {
   phone: string;
   dni: string;
   address: string;
+  about: string;
+  github: string;
   stack: string[];
 };
 

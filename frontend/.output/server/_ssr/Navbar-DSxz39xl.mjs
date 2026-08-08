@@ -5,7 +5,7 @@ import { n as toast } from "../_libs/sonner.mjs";
 import { n as Sun, r as Moon, t as Wallet } from "../_libs/lucide-react.mjs";
 import { n as clsx, t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/Navbar-Cs6M6wYA.js
+//#region node_modules/.nitro/vite/services/ssr/assets/Navbar-DSxz39xl.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function cn(...inputs) {
@@ -178,9 +178,9 @@ function Navbar() {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 				to: "/",
 				className: "font-mono text-sm tracking-[0.3em] uppercase text-foreground",
-				children: ["chain", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				children: ["job", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 					className: "text-muted-foreground",
-					children: "/work"
+					children: "connect"
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-2",

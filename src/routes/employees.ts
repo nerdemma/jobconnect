@@ -3,14 +3,32 @@ import { getEmployeeByEmail, saveEmployee, type Employee } from '../data/store';
 
 const router = Router();
 
-router.post('/', (req, res) => {
-  const { fullName, email, phone, dni, address, stack } = req.body as Employee;
+function isValidGithubUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
 
-  if (!fullName || !email || !phone || !dni || !address || !Array.isArray(stack) || stack.length === 0) {
+  try {
+    const parsed = new URL(trimmed);
+    const hostname = parsed.hostname.toLowerCase();
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    return (hostname === 'github.com' || hostname === 'www.github.com') && segments.length >= 1;
+  } catch {
+    return false;
+  }
+}
+
+router.post('/', (req, res) => {
+  const { fullName, email, phone, dni, address, about, github, stack } = req.body as Employee;
+
+  if (!fullName || !email || !phone || !dni || !address || !about || !github || !Array.isArray(stack) || stack.length === 0) {
     return res.status(400).json({ error: 'Faltan parámetros requeridos para guardar el perfil del empleado.' });
   }
 
-  const employee = saveEmployee({ fullName, email, phone, dni, address, stack });
+  if (!isValidGithubUrl(github)) {
+    return res.status(400).json({ error: 'La URL de GitHub no es válida.' });
+  }
+
+  const employee = saveEmployee({ fullName, email, phone, dni, address, about, github, stack });
   return res.status(201).json(employee);
 });
 

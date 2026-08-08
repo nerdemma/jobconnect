@@ -6,6 +6,7 @@ import { StackPicker } from "@/components/StackPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { getEmployee, saveEmployee, useStore } from "@/lib/store";
 import { postEmployee } from "@/lib/api";
 
@@ -24,19 +25,46 @@ export const Route = createFileRoute("/empleado")({
   component: EmpleadoPage,
 });
 
+function isValidGithubUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+
+  try {
+    const parsed = new URL(trimmed);
+    const hostname = parsed.hostname.toLowerCase();
+    const segments = parsed.pathname.split("/").filter(Boolean);
+    return (hostname === "github.com" || hostname === "www.github.com") && segments.length >= 1;
+  } catch {
+    return false;
+  }
+}
+
 function EmpleadoPage() {
   const navigate = useNavigate();
   const saved = useStore(() => getEmployee(), null);
   const [stack, setStack] = useState<string[]>([]);
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", dni: "", address: "" });
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    dni: "",
+    address: "",
+    about: "",
+    github: "",
+  });
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (stack.length === 0) {
       toast.error("Seleccioná al menos una tecnología");
+      return;
+    }
+
+    if (!isValidGithubUrl(form.github)) {
+      toast.error("Ingresá una URL válida de GitHub, por ejemplo https://github.com/usuario");
       return;
     }
 
@@ -76,6 +104,22 @@ function EmpleadoPage() {
             <div className="sm:col-span-2">
               <Field label="Dirección">
                 <Input required value={form.address} onChange={set("address")} />
+              </Field>
+            </div>
+            <div className="sm:col-span-2">
+              <Field label="About">
+                <Textarea
+                  required
+                  rows={4}
+                  placeholder="Contá tu experiencia, intereses o lo que te gustaría trabajar"
+                  value={form.about}
+                  onChange={set("about")}
+                />
+              </Field>
+            </div>
+            <div className="sm:col-span-2">
+              <Field label="Enlace a GitHub">
+                <Input required type="url" value={form.github} onChange={set("github")} />
               </Field>
             </div>
           </div>

@@ -1,0 +1,19 @@
+{
+  "jobs": [],
+  "employees": [
+    {
+      "fullName": "Ana Dev",
+      "email": "ana@dev.lan",
+      "phone": "1155552222",
+      "dni": "87654321",
+      "address": "CABA",
+      "about": "Desarrolladora frontend con enfoque en experiencias claras",
+      "github": "https://github.com/anadev",
+      "stack": [
+        "React",
+        "TypeScript"
+      ]
+    }
+  ],
+  "applications": []
+}
