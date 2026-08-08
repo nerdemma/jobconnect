@@ -1,4 +1,4 @@
-# 🛡️ DevMatch — Midnight ZKP Job Board
+# 🛡️ JobConnect — Midnight ZKP Job Board
 
 <div align="center">
 
