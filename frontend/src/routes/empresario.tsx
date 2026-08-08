@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { StackPicker } from "@/components/StackPicker";
@@ -14,7 +14,8 @@ import {
   formatMoney,
   toArs,
 } from "@/lib/store";
-import { createJob } from "@/lib/api";
+import { createJob, fetchWalletRole } from "@/lib/api";
+import { useWallet } from "@/lib/wallet";
 
 export const Route = createFileRoute("/empresario")({
   head: () => ({
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/empresario")({
 
 function EmpresarioPage() {
   const navigate = useNavigate();
+  const { address, role, setRole } = useWallet();
   const [stack, setStack] = useState<string[]>([]);
   const [contract, setContract] = useState<"fulltime" | "freelance">("fulltime");
   const [currency, setCurrency] = useState<"ARS" | "USD">("ARS");
@@ -46,6 +48,17 @@ function EmpresarioPage() {
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  useEffect(() => {
+    if (!address) return;
+    if (!role) {
+      fetchWalletRole(address)
+        .then((wallet) => setRole(wallet.role))
+        .catch(() => {
+          /* no role found */
+        });
+    }
+  }, [address, role, setRole]);
 
   const minArs = contract === "fulltime" ? MIN_FULLTIME_ARS : MIN_FREELANCE_HOUR_ARS;
   const minInCurrency = currency === "USD" ? minArs / USD_RATE : minArs;
@@ -66,6 +79,16 @@ function EmpresarioPage() {
       return;
     }
 
+    if (!address) {
+      toast.error("Conectá tu wallet para publicar un anuncio.");
+      return;
+    }
+
+    if (role !== "employer") {
+      toast.error("Esta wallet no está registrada como empresario. Usá una wallet con rol empresario o registrala como empresario.");
+      return;
+    }
+
     try {
       await createJob({
         ...form,
@@ -74,6 +97,7 @@ function EmpresarioPage() {
         currency,
         amount: value,
         stack,
+        walletAddress: address,
       });
       toast.success("Anuncio publicado");
       navigate({ to: "/empleos" });
@@ -90,6 +114,15 @@ function EmpresarioPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           Tipo de cambio de referencia: 1 USD = {USD_RATE} ARS.
         </p>
+        {!address ? (
+          <p className="mt-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-900">
+            Conectá tu wallet desde el navegador para publicar un anuncio.
+          </p>
+        ) : role !== "employer" ? (
+          <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
+            Esta wallet está registrada como "{role}". Usá una wallet con rol empresario o registrala como empresario.
+          </p>
+        ) : null}
 
         <form onSubmit={submit} className="mt-10 space-y-8">
           <div className="grid gap-5 sm:grid-cols-2">
@@ -162,7 +195,11 @@ function EmpresarioPage() {
 
           <StackPicker value={stack} onChange={setStack} />
 
-          <Button type="submit" className="font-mono text-xs uppercase tracking-widest">
+          <Button
+            type="submit"
+            disabled={!address || role !== "employer"}
+            className="font-mono text-xs uppercase tracking-widest"
+          >
             Publicar anuncio
           </Button>
         </form>

@@ -2,10 +2,10 @@ import { n as __toESM } from "../_runtime.mjs";
 import { o as require_jsx_runtime, s as require_react } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { v as useNavigate } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { d as saveEmployee, i as Navbar, p as useStore, s as cn, t as Button, u as getEmployee } from "./Navbar-DSxz39xl.mjs";
-import { n as Label, r as StackPicker, t as Input } from "./label-CV1vU9ZZ.mjs";
-import { i as postEmployee } from "./api-CmYpQ1cc.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/empleado-DaqXP_Yw.js
+import { d as saveEmployee, h as useWallet, i as Navbar, m as useStore, s as cn, t as Button, u as getEmployee } from "./Navbar-B8YV-LUC.mjs";
+import { n as Label, r as StackPicker, t as Input } from "./label-CO2vJS3b.mjs";
+import { a as postEmployee, i as fetchWalletRole } from "./api-k-Zx6zwJ.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/empleado-C-qEibeN.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
@@ -31,6 +31,7 @@ function isValidGithubUrl(value) {
 function EmpleadoPage() {
 	const navigate = useNavigate();
 	const saved = useStore(() => getEmployee(), null);
+	const { address, role, setRole } = useWallet();
 	const [stack, setStack] = (0, import_react.useState)([]);
 	const [form, setForm] = (0, import_react.useState)({
 		fullName: "",
@@ -45,8 +46,24 @@ function EmpleadoPage() {
 		...f,
 		[k]: e.target.value
 	}));
+	(0, import_react.useEffect)(() => {
+		if (!address) return;
+		if (!role) fetchWalletRole(address).then((wallet) => setRole(wallet.role)).catch(() => {});
+	}, [
+		address,
+		role,
+		setRole
+	]);
 	const submit = async (e) => {
 		e.preventDefault();
+		if (!address) {
+			toast.error("Conectá tu wallet para registrar tu perfil.");
+			return;
+		}
+		if (role !== "employee") {
+			toast.error("Esta wallet no está registrada como empleado. Seleccioná o registra una wallet con rol empleado.");
+			return;
+		}
 		if (stack.length === 0) {
 			toast.error("Seleccioná al menos una tecnología");
 			return;
@@ -58,7 +75,8 @@ function EmpleadoPage() {
 		try {
 			await postEmployee({
 				...form,
-				stack
+				stack,
+				walletAddress: address
 			});
 			saveEmployee({
 				...form,
@@ -83,6 +101,17 @@ function EmpleadoPage() {
 					className: "mt-2 text-sm text-muted-foreground",
 					children: "Tus datos personales nunca se comparten con las empresas: solo ven tu stack."
 				}),
+				!address ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mt-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-900",
+					children: "Conectá tu wallet desde el navegador para registrarte como empleado."
+				}) : role !== "employee" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900",
+					children: [
+						"Esta wallet está registrada como \"",
+						role,
+						"\". Usá una wallet con rol empleado o registrala como empleado."
+					]
+				}) : null,
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
 					onSubmit: submit,
 					className: "mt-10 space-y-8",
@@ -170,6 +199,7 @@ function EmpleadoPage() {
 							className: "flex items-center gap-3",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								type: "submit",
+								disabled: !address || role !== "employee",
 								className: "font-mono text-xs uppercase tracking-widest",
 								children: "Registrarme"
 							}), saved && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {

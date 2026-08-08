@@ -115,36 +115,6 @@ var createLucideIcon = (iconName, iconNode) => {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var ArrowRight = createLucideIcon("arrow-right", [["path", {
-	d: "M5 12h14",
-	key: "1ays0h"
-}], ["path", {
-	d: "m12 5 7 7-7 7",
-	key: "xquz4c"
-}]]);
-/**
-* @license lucide-react v0.575.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var Briefcase = createLucideIcon("briefcase", [["path", {
-	d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16",
-	key: "jecpp"
-}], ["rect", {
-	width: "20",
-	height: "14",
-	x: "2",
-	y: "6",
-	rx: "2",
-	key: "i6l2r4"
-}]]);
-/**
-* @license lucide-react v0.575.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
 var Building2 = createLucideIcon("building-2", [
 	["path", {
 		d: "M10 12h4",
@@ -194,26 +164,6 @@ var Clock = createLucideIcon("clock", [["circle", {
 	d: "M12 6v6l4 2",
 	key: "mmk7yg"
 }]]);
-/**
-* @license lucide-react v0.575.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var CodeXml = createLucideIcon("code-xml", [
-	["path", {
-		d: "m18 16 4-4-4-4",
-		key: "1inbqp"
-	}],
-	["path", {
-		d: "m6 8-4 4 4 4",
-		key: "15zrgr"
-	}],
-	["path", {
-		d: "m14.5 4-5 16",
-		key: "e7oirm"
-	}]
-]);
 /**
 * @license lucide-react v0.575.0 - ISC
 *
@@ -299,4 +249,4 @@ var Wallet = createLucideIcon("wallet", [["path", {
 	key: "xoc0q4"
 }]]);
 //#endregion
-export { CodeXml as a, Building2 as c, MapPin as i, Briefcase as l, Sun as n, Clock as o, Moon as r, Circle as s, Wallet as t, ArrowRight as u };
+export { Clock as a, MapPin as i, Sun as n, Circle as o, Moon as r, Building2 as s, Wallet as t };

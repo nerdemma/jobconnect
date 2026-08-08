@@ -10,6 +10,7 @@ export type Employee = {
   about: string;
   github: string;
   stack: string[];
+  walletAddress?: string;
 };
 
 export type Job = {
@@ -24,6 +25,7 @@ export type Job = {
   currency: 'ARS' | 'USD';
   amount: number;
   stack: string[];
+  walletAddress?: string;
   createdAt: number;
 };
 
@@ -37,6 +39,12 @@ export type Application = {
   status: 'pending' | 'accepted' | 'rejected';
 };
 
+export type WalletAccount = {
+  address: string;
+  role: 'employee' | 'employer';
+  createdAt: number;
+};
+
 export const USD_RATE = 1580;
 export const MIN_FULLTIME_ARS = 376600;
 export const MIN_FREELANCE_HOUR_ARS = 15000;
@@ -45,6 +53,7 @@ type StorageShape = {
   jobs: Job[];
   employees: Employee[];
   applications: Application[];
+  wallets: WalletAccount[];
 };
 
 const STORAGE_PATH = path.resolve(process.cwd(), 'data', 'store.json');
@@ -52,13 +61,22 @@ const STORAGE_PATH = path.resolve(process.cwd(), 'data', 'store.json');
 function ensureStorageFile() {
   mkdirSync(path.dirname(STORAGE_PATH), { recursive: true });
   if (!existsSync(STORAGE_PATH)) {
-    writeFileSync(STORAGE_PATH, JSON.stringify({ jobs: [], employees: [], applications: [] }, null, 2));
+    writeFileSync(
+      STORAGE_PATH,
+      JSON.stringify({ jobs: [], employees: [], applications: [], wallets: [] }, null, 2),
+    );
   }
 }
 
 function readStorage(): StorageShape {
   ensureStorageFile();
-  return JSON.parse(readFileSync(STORAGE_PATH, 'utf8')) as StorageShape;
+  const raw = JSON.parse(readFileSync(STORAGE_PATH, 'utf8')) as Partial<StorageShape>;
+  return {
+    jobs: raw.jobs ?? [],
+    employees: raw.employees ?? [],
+    applications: raw.applications ?? [],
+    wallets: raw.wallets ?? [],
+  };
 }
 
 function writeStorage(next: StorageShape) {
@@ -97,6 +115,26 @@ export function saveEmployee(employee: Employee) {
 
 export function getEmployeeByEmail(email: string) {
   return readStorage().employees.find((item) => item.email === email) ?? null;
+}
+
+export function getWalletAccountByAddress(address: string) {
+  const normalized = address.trim().toLowerCase();
+  return readStorage().wallets.find((item) => item.address.toLowerCase() === normalized) ?? null;
+}
+
+export function addWalletAccount(account: WalletAccount) {
+  const storage = readStorage();
+  const normalized = account.address.trim().toLowerCase();
+  const existing = storage.wallets.find((item) => item.address.toLowerCase() === normalized);
+  if (existing) {
+    if (existing.role !== account.role) {
+      throw new Error('Esta wallet ya está registrada con otro rol.');
+    }
+    return existing;
+  }
+  const next = { ...storage, wallets: [...storage.wallets, { ...account, address: normalized }] };
+  writeStorage(next);
+  return { ...account, address: normalized };
 }
 
 export function saveApplication(application: Application) {

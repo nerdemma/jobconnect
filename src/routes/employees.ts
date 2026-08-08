@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getEmployeeByEmail, saveEmployee, type Employee } from '../data/store';
+import { getEmployeeByEmail, saveEmployee, getWalletAccountByAddress, type Employee } from '../data/store';
 
 const router = Router();
 
@@ -18,9 +18,9 @@ function isValidGithubUrl(value: string) {
 }
 
 router.post('/', (req, res) => {
-  const { fullName, email, phone, dni, address, about, github, stack } = req.body as Employee;
+  const { fullName, email, phone, dni, address, about, github, stack, walletAddress } = req.body as Employee & { walletAddress?: string };
 
-  if (!fullName || !email || !phone || !dni || !address || !about || !github || !Array.isArray(stack) || stack.length === 0) {
+  if (!fullName || !email || !phone || !dni || !address || !about || !github || !Array.isArray(stack) || stack.length === 0 || !walletAddress) {
     return res.status(400).json({ error: 'Faltan parámetros requeridos para guardar el perfil del empleado.' });
   }
 
@@ -28,7 +28,23 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: 'La URL de GitHub no es válida.' });
   }
 
-  const employee = saveEmployee({ fullName, email, phone, dni, address, about, github, stack });
+  const normalizedWallet = walletAddress.trim().toLowerCase();
+  const walletAccount = getWalletAccountByAddress(normalizedWallet);
+  if (!walletAccount || walletAccount.role !== 'employee') {
+    return res.status(403).json({ error: 'Solo una wallet registrada como empleado puede guardar el perfil.' });
+  }
+
+  const employee = saveEmployee({
+    fullName,
+    email,
+    phone,
+    dni,
+    address,
+    about,
+    github,
+    stack,
+    walletAddress: normalizedWallet,
+  });
   return res.status(201).json(employee);
 });
 

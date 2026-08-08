@@ -9,7 +9,8 @@
     "test:contract": "tsx contracts/test-contract.ts",
     "start:backend": "tsx src/server.ts",
     "start:frontend": "npm --prefix frontend run dev",
-    "start:all": "bash scripts/start-all.sh"
+    "start:all": "bash scripts/start-all.sh",
+    "test:e2e:privacy": "node scripts/test-privacy.js"
   },
   "keywords": [
     "midnight",

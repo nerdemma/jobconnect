@@ -4,10 +4,10 @@ import { _ as Link, f as createRouter, g as createRootRouteWithContext, h as cre
 import { t as Toaster } from "../_libs/sonner.mjs";
 import { t as QueryClient } from "../_libs/tanstack__query-core.mjs";
 import { t as QueryClientProvider } from "../_libs/tanstack__react-query.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-BOVk7mIV.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-7LXMY9Sc.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
-var styles_default = "/assets/styles-8IJIzBOY.css";
+var styles_default = "/assets/styles-DPiwBlX2.css";
 var Toaster$1 = ({ ...props }) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster, {
 		className: "toaster group",
@@ -107,7 +107,7 @@ function ErrorComponent({ error, reset }) {
 		})
 	});
 }
-var Route$4 = createRootRouteWithContext()({
+var Route$5 = createRootRouteWithContext()({
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
@@ -166,14 +166,14 @@ function RootShell({ children }) {
 	});
 }
 function RootComponent() {
-	const { queryClient } = Route$4.useRouteContext();
+	const { queryClient } = Route$5.useRouteContext();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(QueryClientProvider, {
 		client: queryClient,
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster$1, { position: "top-center" })]
 	});
 }
-var $$splitComponentImporter$3 = () => import("./routes-ByxqIVV8.mjs");
-var Route$3 = createFileRoute("/")({
+var $$splitComponentImporter$4 = () => import("./routes-BV8LNdw9.mjs");
+var Route$4 = createFileRoute("/")({
 	head: () => ({ meta: [
 		{ title: "chain/work — Empleo web3 minimalista" },
 		{
@@ -189,10 +189,10 @@ var Route$3 = createFileRoute("/")({
 			content: "Empleo web3 en Argentina: publicá o postulate con tu wallet."
 		}
 	] }),
-	component: lazyRouteComponent($$splitComponentImporter$3, "component")
+	component: lazyRouteComponent($$splitComponentImporter$4, "component")
 });
-var $$splitComponentImporter$2 = () => import("./empleado-DaqXP_Yw.mjs");
-var Route$2 = createFileRoute("/empleado")({
+var $$splitComponentImporter$3 = () => import("./empleado-C-qEibeN.mjs");
+var Route$3 = createFileRoute("/empleado")({
 	head: () => ({ meta: [
 		{ title: "Registro de talento — chain/work" },
 		{
@@ -208,10 +208,10 @@ var Route$2 = createFileRoute("/empleado")({
 			content: "Cargá tu stack técnico y postulate a empleos web3."
 		}
 	] }),
-	component: lazyRouteComponent($$splitComponentImporter$2, "component")
+	component: lazyRouteComponent($$splitComponentImporter$3, "component")
 });
-var $$splitComponentImporter$1 = () => import("./empleos-DCQeH0oD.mjs");
-var Route$1 = createFileRoute("/empleos")({
+var $$splitComponentImporter$2 = () => import("./empleos-Dmh0f4QJ.mjs");
+var Route$2 = createFileRoute("/empleos")({
 	head: () => ({ meta: [
 		{ title: "Publicaciones — chain/work" },
 		{
@@ -227,10 +227,10 @@ var Route$1 = createFileRoute("/empleos")({
 			content: "Búsquedas técnicas web3 abiertas ahora."
 		}
 	] }),
-	component: lazyRouteComponent($$splitComponentImporter$1, "component")
+	component: lazyRouteComponent($$splitComponentImporter$2, "component")
 });
-var $$splitComponentImporter = () => import("./empresario-Bt7oUQNv.mjs");
-var Route = createFileRoute("/empresario")({
+var $$splitComponentImporter$1 = () => import("./empresario-DrY8JIMo.mjs");
+var Route$1 = createFileRoute("/empresario")({
 	head: () => ({ meta: [
 		{ title: "Publicar anuncio — chain/work" },
 		{
@@ -246,31 +246,44 @@ var Route = createFileRoute("/empresario")({
 			content: "Publicá tu búsqueda técnica y recibí postulaciones por mail."
 		}
 	] }),
+	component: lazyRouteComponent($$splitComponentImporter$1, "component")
+});
+var $$splitComponentImporter = () => import("./rol-B_6tYeWu.mjs");
+var Route = createFileRoute("/rol")({
+	head: () => ({ meta: [{ title: "Conectar wallet y elegir rol — chain/work" }, {
+		name: "description",
+		content: "Conectá tu wallet y elegí si sos empleado o empresario. El rol se fija hasta que desconectes la wallet."
+	}] }),
 	component: lazyRouteComponent($$splitComponentImporter, "component")
 });
 var rootRouteChildren = {
-	IndexRoute: Route$3.update({
+	IndexRoute: Route$4.update({
 		id: "/",
 		path: "/",
-		getParentRoute: () => Route$4
+		getParentRoute: () => Route$5
 	}),
-	EmpleadoRoute: Route$2.update({
+	EmpleadoRoute: Route$3.update({
 		id: "/empleado",
 		path: "/empleado",
-		getParentRoute: () => Route$4
+		getParentRoute: () => Route$5
 	}),
-	EmpleosRoute: Route$1.update({
+	EmpleosRoute: Route$2.update({
 		id: "/empleos",
 		path: "/empleos",
-		getParentRoute: () => Route$4
+		getParentRoute: () => Route$5
 	}),
-	EmpresarioRoute: Route.update({
+	EmpresarioRoute: Route$1.update({
 		id: "/empresario",
 		path: "/empresario",
-		getParentRoute: () => Route$4
+		getParentRoute: () => Route$5
+	}),
+	RolRoute: Route.update({
+		id: "/rol",
+		path: "/rol",
+		getParentRoute: () => Route$5
 	})
 };
-var routeTree = Route$4._addFileChildren(rootRouteChildren)._addFileTypes();
+var routeTree = Route$5._addFileChildren(rootRouteChildren)._addFileTypes();
 var getRouter = () => {
 	const queryClient = new QueryClient();
 	return createRouter({

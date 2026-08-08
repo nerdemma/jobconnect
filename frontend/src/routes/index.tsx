@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Briefcase, Code2 } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
+import { useWallet } from "@/lib/wallet";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,6 +23,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { address, role } = useWallet();
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -40,34 +44,31 @@ function Index() {
             sin datos personales expuestos.
           </p>
 
-          <div className="mt-12 grid gap-4 sm:grid-cols-2">
-            <Link
-              to="/empleado"
-              className="group rounded-xl border border-border bg-card p-8 transition-colors hover:border-foreground"
-            >
-              <Code2 className="size-5 text-muted-foreground" />
-              <h2 className="mt-6 text-2xl font-medium text-card-foreground">Soy empleado</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Cargá tu stack técnico y accedé a todas las publicaciones.
+          <div className="mt-12 sm:mt-16">
+            <div className="rounded-3xl border border-border bg-card p-10 text-center">
+              <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Paso 1</p>
+              <h2 className="mt-5 text-4xl font-semibold text-foreground">Conectá tu wallet</h2>
+              <p className="mt-4 text-base text-muted-foreground">
+                Primero conectá MetaMask (o wallet de desarrollo) desde la barra superior.
               </p>
-              <span className="mt-6 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground">
-                Empezar <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
-              </span>
-            </Link>
-
-            <Link
-              to="/empresario"
-              className="group rounded-xl border border-border bg-card p-8 transition-colors hover:border-foreground"
-            >
-              <Briefcase className="size-5 text-muted-foreground" />
-              <h2 className="mt-6 text-2xl font-medium text-card-foreground">Soy empresario</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Publicá un anuncio y recibí postulaciones en tu mail.
-              </p>
-              <span className="mt-6 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground">
-                Publicar <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
-              </span>
-            </Link>
+              <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                <Button onClick={() => navigate({ to: '/rol' })} className="font-mono text-xs uppercase tracking-widest">
+                  Elegir rol
+                </Button>
+              </div>
+              {address ? (
+                <p className="mt-6 text-sm text-foreground">Wallet conectada: {address}</p>
+              ) : (
+                <p className="mt-6 text-sm text-muted-foreground">
+                  Conectá tu wallet usando el botón de la esquina superior derecha.
+                </p>
+              )}
+              {role ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Rol actual: <span className="font-semibold text-foreground">{role}</span>
+                </p>
+              ) : null}
+            </div>
           </div>
         </section>
       </main>

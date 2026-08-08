@@ -46,7 +46,7 @@ router.post('/apply', async (req: Request, res: Response) => {
       status: 'pending',
     });
 
-    await sendEmployerNotification(job.email, applicationId, jobId, applicantEmail, profileSummary, skills);
+    await sendEmployerNotification(job.email, applicationId, jobId, profileSummary, skills);
 
     return res.status(200).json({
       success: true,
@@ -72,11 +72,13 @@ router.get('/decision', async (req: Request, res: Response) => {
     const accepted = payload.action === 'accept';
 
     const application = getApplicationById(payload.applicationId);
-    if (application) {
-      application.status = accepted ? 'accepted' : 'rejected';
+    if (!application) {
+      return res.status(404).send('<h2>Error: Aplicación no encontrada.</h2>');
     }
 
-    await sendApplicantStatusEmail(payload.applicantEmail, accepted).catch((mailError) => {
+    application.status = accepted ? 'accepted' : 'rejected';
+
+    await sendApplicantStatusEmail(application.applicantEmail, accepted).catch((mailError) => {
       console.error('Error enviando notificación al postulante:', mailError);
     });
 

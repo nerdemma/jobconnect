@@ -42,7 +42,6 @@ export async function sendEmployerNotification(
   employerEmail: string,
   applicationId: string,
   jobId: string,
-  applicantEmail: string,
   profileSummary: string,
   skills: string[] = []
 ) {
@@ -54,8 +53,8 @@ export async function sendEmployerNotification(
 
   const baseUrl = process.env.BASE_URL || "http://localhost:3001";
   
-  const acceptToken = generateActionToken({ applicationId, jobId, applicantEmail, action: 'accept' });
-  const rejectToken = generateActionToken({ applicationId, jobId, applicantEmail, action: 'reject' });
+  const acceptToken = generateActionToken({ applicationId, jobId, action: 'accept' });
+  const rejectToken = generateActionToken({ applicationId, jobId, action: 'reject' });
 
   const acceptUrl = `${baseUrl}/api/applications/decision?token=${acceptToken}`;
   const rejectUrl = `${baseUrl}/api/applications/decision?token=${rejectToken}`;

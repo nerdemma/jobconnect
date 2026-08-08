@@ -47,3 +47,28 @@ El sistema notifica al empleador mediante un motor de correos seguro con accione
 └────────┬────────┘ └────────────┬─────────────┘
          │                       │
          └───────> 3. close_job() ┘ (On Accept)
+
+      ## Modo REAL Midnight (producción)
+
+      Para integrar la verificación real con Midnight/Compact sustituye el modo de simulación:
+
+      - Agrega las credenciales en el entorno: `REAL_MIDNIGHT=true` y `MIDNIGHT_API_KEY=...`
+      - Instala el SDK oficial según la documentación de Midnight (ej: `npm install @midnight/sdk`).
+      - El servicio `src/services/midnightService.ts` intentará importar dinámicamente `@midnight/sdk` cuando `REAL_MIDNIGHT=true` y delegará la verificación al cliente real. Adapta la inicialización según la API del SDK.
+
+      En caso de no contar con el SDK instalado, el proyecto seguirá funcionando en modo simulación (útil para demos y MVP).
+
+      ## Pruebas E2E de privacidad (local)
+
+      Hay un script de verificación rápida que comprueba las garantías de privacidad del MVP:
+
+      ```bash
+      chmod +x scripts/test-privacy.sh
+      ./scripts/test-privacy.sh
+      ```
+
+      El script crea un `job`, un `employee`, envía una `application` con un proof simulado y valida que:
+      - El objeto `application` guardado en `data/store.json` no contiene campo `salary`.
+      - Los tokens de acción generados no exponen `applicantEmail`.
+
+      Recomendación: ejecutar estas pruebas en un entorno de desarrollo local donde el backend y la base de datos en `data/store.json` sean temporales.

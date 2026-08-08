@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import applicationRoutes from './routes/applications';
 import jobsRoutes from './routes/jobs';
 import employeesRoutes from './routes/employees';
+import walletRoutes from './routes/wallets';
+import { MidnightService } from './services/midnightService';
 
 dotenv.config();
 
@@ -34,6 +36,7 @@ app.get('/health', (req: Request, res: Response) => {
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/employees', employeesRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/wallets', walletRoutes);
 
 // Middleware global para manejo de errores de Express
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -44,8 +47,16 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`==================================================`);
-  console.log(`🚀 Backend DevMatch listo en http://localhost:${PORT}`);
-  console.log(`==================================================`);
-});
+(async () => {
+  try {
+    await MidnightService.getInstance().initialize();
+  } catch (err) {
+    console.warn('[Server] Falló la inicialización de MidnightService, continuando en modo simulación.');
+  }
+
+  app.listen(PORT, () => {
+    console.log(`==================================================`);
+    console.log(`🚀 Backend DevMatch listo en http://localhost:${PORT}`);
+    console.log(`==================================================`);
+  });
+})();

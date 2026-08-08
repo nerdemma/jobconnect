@@ -2,10 +2,10 @@ import { n as __toESM } from "../_runtime.mjs";
 import { o as require_jsx_runtime, s as require_react } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { _ as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { c as Building2, i as MapPin, o as Clock } from "../_libs/lucide-react.mjs";
-import { c as formatMoney, i as Navbar, l as getApplied, o as addApplied, p as useStore, t as Button, u as getEmployee } from "./Navbar-DSxz39xl.mjs";
-import { r as fetchJobs, t as applyToJob } from "./api-CmYpQ1cc.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/empleos-DCQeH0oD.js
+import { a as Clock, i as MapPin, s as Building2 } from "../_libs/lucide-react.mjs";
+import { c as formatMoney, i as Navbar, l as getApplied, m as useStore, o as addApplied, t as Button, u as getEmployee } from "./Navbar-B8YV-LUC.mjs";
+import { r as fetchJobs, t as applyToJob } from "./api-k-Zx6zwJ.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/empleos-Dmh0f4QJ.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function EmpleosPage() {
@@ -52,19 +52,28 @@ function EmpleosPage() {
 	});
 	const apply = async (job) => {
 		try {
-			const profileSummary = [
-				`Nombre: ${employee.fullName}`,
-				`Stack: ${employee.stack.join(", ")}`,
-				`Email de contacto: ${employee.email}`,
-				`Teléfono: ${employee.phone}`,
-				`Ubicación: ${employee.address}`
-			].join(" | ");
+			const input = window.prompt(`Ingresá tu remuneración pretendida en ${job.currency} (ej: 450000) para postular a #${job.id}`);
+			if (!input) {
+				toast.error("Postulación cancelada: necesitás ingresar tu remuneración privada para generar la prueba.");
+				return;
+			}
+			const salary = Number(input);
+			if (Number.isNaN(salary) || salary <= 0) {
+				toast.error("Remuneración inválida. Intentalo de nuevo.");
+				return;
+			}
+			const proofPayload = {
+				salary,
+				isFreelance: job.contract === "freelance"
+			};
+			const zkpProof = btoa(JSON.stringify(proofPayload));
+			const profileSummary = [`Stack: ${employee.stack.join(", ")}`, employee.about ? `Sobre: ${employee.about}` : void 0].filter(Boolean).join(" | ");
 			await applyToJob({
 				jobId: job.id,
 				applicantEmail: employee.email,
 				profileSummary,
 				skills: employee.stack,
-				zkpProof: "proof_zkp_mock_hash_9876543210"
+				zkpProof
 			});
 			addApplied(job.id);
 			toast.success("Postulación enviada al empleador");

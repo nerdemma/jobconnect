@@ -34,6 +34,7 @@ const KEYS = {
   employee: "w3jobs.employee",
   jobs: "w3jobs.jobs",
   wallet: "w3jobs.wallet",
+  role: "w3jobs.role",
   applied: "w3jobs.applied",
 };
 
@@ -70,6 +71,12 @@ export function getWallet() {
 }
 export function setWallet(address: string | null) {
   write(KEYS.wallet, address);
+}
+export function getWalletRole() {
+  return read<'employee' | 'employer' | null>(KEYS.role, null);
+}
+export function setWalletRole(role: 'employee' | 'employer' | null) {
+  write(KEYS.role, role);
 }
 export function getApplied() {
   return read<string[]>(KEYS.applied, []);

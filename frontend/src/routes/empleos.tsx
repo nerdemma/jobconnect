@@ -68,20 +68,44 @@ function EmpleosPage() {
 
   const apply = async (job: Job) => {
     try {
+      // Solicitar al postulante (cliente) su remuneración pretendida en forma privada
+      // No se guarda en el perfil ni se envía en texto claro al empleador.
+      const input = window.prompt(
+        `Ingresá tu remuneración pretendida en ${job.currency} (ej: 450000) para postular a #${job.id}`,
+      );
+
+      if (!input) {
+        toast.error('Postulación cancelada: necesitás ingresar tu remuneración privada para generar la prueba.');
+        return;
+      }
+
+      const salary = Number(input);
+      if (Number.isNaN(salary) || salary <= 0) {
+        toast.error('Remuneración inválida. Intentalo de nuevo.');
+        return;
+      }
+
+      const isFreelance = job.contract === 'freelance';
+
+      // Generamos un proof simulado: codificamos la información mínima en base64.
+      // En producción esto lo reemplazará la generación real del proof con Compact/Midnight SDK.
+      const proofPayload = { salary, isFreelance };
+      const zkpProof = btoa(JSON.stringify(proofPayload));
+
+      // Perfil anónimo que se comparte con el empleador (no incluye email/telefono/nombre)
       const profileSummary = [
-        `Nombre: ${employee.fullName}`,
         `Stack: ${employee.stack.join(', ')}`,
-        `Email de contacto: ${employee.email}`,
-        `Teléfono: ${employee.phone}`,
-        `Ubicación: ${employee.address}`,
-      ].join(' | ');
+        employee.about ? `Sobre: ${employee.about}` : undefined,
+      ]
+        .filter(Boolean)
+        .join(' | ');
 
       await applyToJob({
         jobId: job.id,
         applicantEmail: employee.email,
         profileSummary,
         skills: employee.stack,
-        zkpProof: 'proof_zkp_mock_hash_9876543210',
+        zkpProof,
       });
 
       addApplied(job.id);

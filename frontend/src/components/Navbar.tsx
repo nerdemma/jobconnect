@@ -13,8 +13,9 @@ export function Navbar() {
     try {
       const res = await connect();
       toast.success(res.demo ? "Wallet demo conectada" : "Wallet conectada");
-    } catch {
-      toast.error("No se pudo conectar la wallet");
+    } catch (error) {
+      console.error('Wallet connect error:', error);
+      toast.error((error as Error).message || "No se pudo conectar la wallet");
     }
   };
 

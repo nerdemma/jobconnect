@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmpleadoRouteImport } from './routes/empleado'
 import { Route as EmpleosRouteImport } from './routes/empleos'
 import { Route as EmpresarioRouteImport } from './routes/empresario'
+import { Route as RolRouteImport } from './routes/rol'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const EmpresarioRoute = EmpresarioRouteImport.update({
   path: '/empresario',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RolRoute = RolRouteImport.update({
+  id: '/rol',
+  path: '/rol',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/empleado': typeof EmpleadoRoute
   '/empleos': typeof EmpleosRoute
   '/empresario': typeof EmpresarioRoute
+  '/rol': typeof RolRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/empleado': typeof EmpleadoRoute
   '/empleos': typeof EmpleosRoute
   '/empresario': typeof EmpresarioRoute
+  '/rol': typeof RolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/empleado': typeof EmpleadoRoute
   '/empleos': typeof EmpleosRoute
   '/empresario': typeof EmpresarioRoute
+  '/rol': typeof RolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/empleado' | '/empleos' | '/empresario'
+  fullPaths: '/' | '/empleado' | '/empleos' | '/empresario' | '/rol'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/empleado' | '/empleos' | '/empresario'
-  id: '__root__' | '/' | '/empleado' | '/empleos' | '/empresario'
+  to: '/' | '/empleado' | '/empleos' | '/empresario' | '/rol'
+  id: '__root__' | '/' | '/empleado' | '/empleos' | '/empresario' | '/rol'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   EmpleadoRoute: typeof EmpleadoRoute
   EmpleosRoute: typeof EmpleosRoute
   EmpresarioRoute: typeof EmpresarioRoute
+  RolRoute: typeof RolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmpresarioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rol': {
+      id: '/rol'
+      path: '/rol'
+      fullPath: '/rol'
+      preLoaderRoute: typeof RolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpleadoRoute: EmpleadoRoute,
   EmpleosRoute: EmpleosRoute,
   EmpresarioRoute: EmpresarioRoute,
+  RolRoute: RolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

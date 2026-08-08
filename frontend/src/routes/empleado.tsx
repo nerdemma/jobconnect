@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { StackPicker } from "@/components/StackPicker";
@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getEmployee, saveEmployee, useStore } from "@/lib/store";
-import { postEmployee } from "@/lib/api";
+import { postEmployee, fetchWalletRole } from "@/lib/api";
+import { useWallet } from "@/lib/wallet";
 
 export const Route = createFileRoute("/empleado")({
   head: () => ({
@@ -42,6 +43,7 @@ function isValidGithubUrl(value: string) {
 function EmpleadoPage() {
   const navigate = useNavigate();
   const saved = useStore(() => getEmployee(), null);
+  const { address, role, setRole } = useWallet();
   const [stack, setStack] = useState<string[]>([]);
   const [form, setForm] = useState({
     fullName: "",
@@ -56,8 +58,29 @@ function EmpleadoPage() {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  useEffect(() => {
+    if (!address) return;
+    if (!role) {
+      fetchWalletRole(address)
+        .then((wallet) => setRole(wallet.role))
+        .catch(() => {
+          /* no role found */
+        });
+    }
+  }, [address, role, setRole]);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!address) {
+      toast.error("Conectá tu wallet para registrar tu perfil.");
+      return;
+    }
+
+    if (role !== "employee") {
+      toast.error("Esta wallet no está registrada como empleado. Seleccioná o registra una wallet con rol empleado.");
+      return;
+    }
+
     if (stack.length === 0) {
       toast.error("Seleccioná al menos una tecnología");
       return;
@@ -69,7 +92,7 @@ function EmpleadoPage() {
     }
 
     try {
-      await postEmployee({ ...form, stack });
+      await postEmployee({ ...form, stack, walletAddress: address });
       saveEmployee({ ...form, stack });
       toast.success("Perfil registrado");
       navigate({ to: "/empleos" });
@@ -86,6 +109,15 @@ function EmpleadoPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           Tus datos personales nunca se comparten con las empresas: solo ven tu stack.
         </p>
+        {!address ? (
+          <p className="mt-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-900">
+            Conectá tu wallet desde el navegador para registrarte como empleado.
+          </p>
+        ) : role !== "employee" ? (
+          <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
+            Esta wallet está registrada como "{role}". Usá una wallet con rol empleado o registrala como empleado.
+          </p>
+        ) : null}
 
         <form onSubmit={submit} className="mt-10 space-y-8">
           <div className="grid gap-5 sm:grid-cols-2">
@@ -127,7 +159,11 @@ function EmpleadoPage() {
           <StackPicker value={stack} onChange={setStack} />
 
           <div className="flex items-center gap-3">
-            <Button type="submit" className="font-mono text-xs uppercase tracking-widest">
+            <Button
+              type="submit"
+              disabled={!address || role !== "employee"}
+              className="font-mono text-xs uppercase tracking-widest"
+            >
               Registrarme
             </Button>
             {saved && (

@@ -5,7 +5,7 @@ import { n as toast } from "../_libs/sonner.mjs";
 import { n as Sun, r as Moon, t as Wallet } from "../_libs/lucide-react.mjs";
 import { n as clsx, t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/Navbar-DSxz39xl.js
+//#region node_modules/.nitro/vite/services/ssr/assets/Navbar-B8YV-LUC.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function cn(...inputs) {
@@ -71,6 +71,7 @@ var KEYS = {
 	employee: "w3jobs.employee",
 	jobs: "w3jobs.jobs",
 	wallet: "w3jobs.wallet",
+	role: "w3jobs.role",
 	applied: "w3jobs.applied"
 };
 function read(key, fallback) {
@@ -98,6 +99,12 @@ function getWallet() {
 }
 function setWallet(address) {
 	write(KEYS.wallet, address);
+}
+function getWalletRole() {
+	return read(KEYS.role, null);
+}
+function setWalletRole(role) {
+	write(KEYS.role, role);
 }
 function getApplied() {
 	return read(KEYS.applied, []);
@@ -133,28 +140,51 @@ function formatMoney(amount, currency) {
 }
 function useWallet() {
 	const address = useStore(() => getWallet(), null);
+	const role = useStore(() => getWalletRole(), null);
 	const connect = async () => {
 		const eth = window.ethereum;
-		if (!eth) {
+		if (!eth || typeof eth.request !== "function") {
 			const demo = "0x" + Array.from({ length: 40 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
 			setWallet(demo);
+			setWalletRole(null);
 			return {
 				address: demo,
 				demo: true
 			};
 		}
-		const addr = (await eth.request({ method: "eth_requestAccounts" }))?.[0] ?? null;
+		let accounts = null;
+		try {
+			accounts = await eth.request({
+				method: "eth_requestAccounts",
+				params: []
+			});
+		} catch (error) {
+			if (error?.code === 4001) throw new Error("Conexión rechazada por el usuario.");
+			throw error;
+		}
+		const addr = accounts?.[0] ?? null;
+		if (!addr) throw new Error("No se obtuvo una dirección de wallet.");
+		const previousAddress = getWallet();
 		setWallet(addr);
+		if (addr && previousAddress && previousAddress.toLowerCase() !== addr.toLowerCase()) setWalletRole(null);
 		return {
 			address: addr,
 			demo: false
 		};
 	};
-	const disconnect = () => setWallet(null);
+	const disconnect = () => {
+		setWallet(null);
+		setWalletRole(null);
+	};
+	const setRole = (newRole) => {
+		setWalletRole(newRole);
+	};
 	return {
 		address,
+		role,
 		connect,
-		disconnect
+		disconnect,
+		setRole
 	};
 }
 function shortAddress(a) {
@@ -167,8 +197,9 @@ function Navbar() {
 		try {
 			const res = await connect();
 			toast.success(res.demo ? "Wallet demo conectada" : "Wallet conectada");
-		} catch {
-			toast.error("No se pudo conectar la wallet");
+		} catch (error) {
+			console.error("Wallet connect error:", error);
+			toast.error(error.message || "No se pudo conectar la wallet");
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
@@ -209,4 +240,4 @@ function Navbar() {
 	});
 }
 //#endregion
-export { USD_RATE as a, formatMoney as c, saveEmployee as d, toArs as f, Navbar as i, getApplied as l, MIN_FREELANCE_HOUR_ARS as n, addApplied as o, useStore as p, MIN_FULLTIME_ARS as r, cn as s, Button as t, getEmployee as u };
+export { USD_RATE as a, formatMoney as c, saveEmployee as d, shortAddress as f, useWallet as h, Navbar as i, getApplied as l, useStore as m, MIN_FREELANCE_HOUR_ARS as n, addApplied as o, toArs as p, MIN_FULLTIME_ARS as r, cn as s, Button as t, getEmployee as u };
