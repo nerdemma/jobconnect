@@ -3,6 +3,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import applicationRoutes from './routes/applications';
+import jobsRoutes from './routes/jobs';
+import employeesRoutes from './routes/employees';
 
 dotenv.config();
 
@@ -29,6 +31,8 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Rutas principales
+app.use('/api/jobs', jobsRoutes);
+app.use('/api/employees', employeesRoutes);
 app.use('/api/applications', applicationRoutes);
 
 // Middleware global para manejo de errores de Express
