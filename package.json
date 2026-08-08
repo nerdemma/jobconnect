@@ -1,0 +1,36 @@
+{
+  "name": "dev-match",
+  "version": "1.0.0",
+  "description": "MVP para busqueda de empleo preservando privacidad con Midnight",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build:contract": "compactc.bin contracts/JobBoard.compact build/",
+    "test:contract": "tsx contracts/test-contract.ts",
+    "start:backend": "tsx src/server.ts"
+  },
+  "keywords": [
+    "midnight",
+    "zkp",
+    "privacy",
+    "compact"
+  ],
+  "author": "",
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.0.0",
+    "@types/nodemailer": "^8.0.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.11",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^9.0.5"
+  }
+}
