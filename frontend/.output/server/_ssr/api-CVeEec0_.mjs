@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/api-k-Zx6zwJ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/api-CVeEec0_.js
 var BASE_URL = "";
 async function fetchJson(path, options) {
 	const response = await fetch(`${BASE_URL}${path}`, {
@@ -14,6 +14,9 @@ async function postEmployee(employee) {
 		method: "POST",
 		body: JSON.stringify(employee)
 	});
+}
+async function fetchEmployee(walletAddress) {
+	return fetchJson(`/api/employees?walletAddress=${encodeURIComponent(walletAddress)}`);
 }
 async function fetchWalletRole(address) {
 	return fetchJson(`/api/wallets?address=${encodeURIComponent(address)}`);
@@ -43,4 +46,4 @@ async function applyToJob(payload) {
 	});
 }
 //#endregion
-export { postEmployee as a, fetchWalletRole as i, createJob as n, registerWallet as o, fetchJobs as r, applyToJob as t };
+export { fetchWalletRole as a, fetchJobs as i, createJob as n, postEmployee as o, fetchEmployee as r, registerWallet as s, applyToJob as t };

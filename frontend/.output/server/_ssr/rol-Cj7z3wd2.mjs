@@ -2,9 +2,9 @@ import { n as __toESM } from "../_runtime.mjs";
 import { o as require_jsx_runtime, s as require_react } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { v as useNavigate } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { f as shortAddress, h as useWallet, i as Navbar, t as Button } from "./Navbar-B8YV-LUC.mjs";
-import { i as fetchWalletRole, o as registerWallet } from "./api-k-Zx6zwJ.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/rol-B_6tYeWu.js
+import { f as shortAddress, h as useWallet, i as Navbar, t as Button } from "./Navbar-Q-Z7NG4L.mjs";
+import { a as fetchWalletRole, s as registerWallet } from "./api-CVeEec0_.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/rol-Cj7z3wd2.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function RoleSelectionPage() {

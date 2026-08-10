@@ -4,8 +4,17 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { addApplied, formatMoney, getApplied, getEmployee, useStore, type Job, } from "@/lib/store";
-import { applyToJob, fetchJobs } from "@/lib/api";
+import {
+  addApplied,
+  formatMoney,
+  getApplied,
+  getEmployee,
+  saveEmployee,
+  useStore,
+  type Job,
+} from "@/lib/store";
+import { applyToJob, fetchEmployee, fetchJobs } from "@/lib/api";
+import { useWallet } from "@/lib/wallet";
 
 export const Route = createFileRoute("/empleos")({
   head: () => ({
@@ -13,21 +22,28 @@ export const Route = createFileRoute("/empleos")({
       { title: "Publicaciones — chain/work" },
       {
         name: "description",
-        content: "Explorá búsquedas técnicas web3 y postulate compartiendo solo tu stack.",
+        content:
+          "Explorá búsquedas técnicas web3 y postulate compartiendo solo tu stack.",
       },
       { property: "og:title", content: "Publicaciones — chain/work" },
-      { property: "og:description", content: "Búsquedas técnicas web3 abiertas ahora." },
+      {
+        property: "og:description",
+        content: "Búsquedas técnicas web3 abiertas ahora.",
+      },
     ],
   }),
   component: EmpleosPage,
 });
 
 function EmpleosPage() {
-  const employee = useStore(() => getEmployee(), null);
+  const { address } = useWallet();
+  const employee = useStore(() => getEmployee(address), null, [address]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const applied = useStore(() => getApplied(), [] as string[]);
+  const applied = useStore(() => getApplied(address), [] as string[], [
+    address,
+  ]);
 
   useEffect(() => {
     const loadJobs = async () => {
@@ -37,7 +53,9 @@ function EmpleosPage() {
         const payload = await fetchJobs();
         setJobs(payload);
       } catch (err) {
-        setError((err as Error).message || 'No se pudieron cargar las publicaciones.');
+        setError(
+          (err as Error).message || "No se pudieron cargar las publicaciones.",
+        );
       } finally {
         setLoading(false);
       }
@@ -46,14 +64,28 @@ function EmpleosPage() {
     loadJobs();
   }, []);
 
-  if (!employee) {
+  useEffect(() => {
+    if (!address) return;
+
+    fetchEmployee(address)
+      .then((profile) => {
+        saveEmployee(profile, address);
+      })
+      .catch(() => {
+        /* Profile does not exist yet or API is unavailable. */
+      });
+  }, [address]);
+
+  if (!address || !employee) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="mx-auto max-w-3xl px-6 py-24 text-center">
-          <h1 className="text-3xl font-semibold text-foreground">Registrate para ver los avisos</h1>
+          <h1 className="text-3xl font-semibold text-foreground">
+            Registrate para ver los avisos
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Solo los perfiles con stack cargado acceden a las publicaciones.
+            Conectá tu wallet y cargá tu stack para acceder a las publicaciones.
           </p>
           <Link
             to="/empleado"
@@ -75,17 +107,19 @@ function EmpleosPage() {
       );
 
       if (!input) {
-        toast.error('Postulación cancelada: necesitás ingresar tu remuneración privada para generar la prueba.');
+        toast.error(
+          "Postulación cancelada: necesitás ingresar tu remuneración privada para generar la prueba.",
+        );
         return;
       }
 
       const salary = Number(input);
       if (Number.isNaN(salary) || salary <= 0) {
-        toast.error('Remuneración inválida. Intentalo de nuevo.');
+        toast.error("Remuneración inválida. Intentalo de nuevo.");
         return;
       }
 
-      const isFreelance = job.contract === 'freelance';
+      const isFreelance = job.contract === "freelance";
 
       // Generamos un proof simulado: codificamos la información mínima en base64.
       // En producción esto lo reemplazará la generación real del proof con Compact/Midnight SDK.
@@ -94,24 +128,27 @@ function EmpleosPage() {
 
       // Perfil anónimo que se comparte con el empleador (no incluye email/telefono/nombre)
       const profileSummary = [
-        `Stack: ${employee.stack.join(', ')}`,
+        `Stack: ${employee.stack.join(", ")}`,
         employee.about ? `Sobre: ${employee.about}` : undefined,
       ]
         .filter(Boolean)
-        .join(' | ');
+        .join(" | ");
 
       await applyToJob({
         jobId: job.id,
         applicantEmail: employee.email,
+        applicantWalletAddress: address,
         profileSummary,
         skills: employee.stack,
         zkpProof,
       });
 
-      addApplied(job.id);
-      toast.success('Postulación enviada al empleador');
+      addApplied(job.id, address);
+      toast.success("Postulación enviada al empleador");
     } catch (error) {
-      toast.error((error as Error).message || 'No se pudo enviar la postulación.');
+      toast.error(
+        (error as Error).message || "No se pudo enviar la postulación.",
+      );
     }
   };
 
@@ -121,10 +158,12 @@ function EmpleosPage() {
       <main className="mx-auto max-w-6xl px-6 py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground">Publicaciones</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground">
+              Publicaciones
+            </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              {jobs.length} aviso{jobs.length === 1 ? "" : "s"} · tu stack: {employee.stack.length}{" "}
-              tecnologías
+              {jobs.length} aviso{jobs.length === 1 ? "" : "s"} · tu stack:{" "}
+              {employee.stack.length} tecnologías
             </p>
           </div>
           <Link
@@ -136,7 +175,9 @@ function EmpleosPage() {
         </div>
 
         {loading ? (
-          <p className="mt-16 font-mono text-sm text-muted-foreground">Cargando publicaciones...</p>
+          <p className="mt-16 font-mono text-sm text-muted-foreground">
+            Cargando publicaciones...
+          </p>
         ) : error ? (
           <p className="mt-16 font-mono text-sm text-destructive">{error}</p>
         ) : jobs.length === 0 ? (
@@ -146,7 +187,9 @@ function EmpleosPage() {
         ) : (
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {jobs.map((job) => {
-              const matches = job.stack.filter((t) => employee.stack.includes(t));
+              const matches = job.stack.filter((t) =>
+                employee.stack.includes(t),
+              );
               return (
                 <article
                   key={job.id}
@@ -168,7 +211,9 @@ function EmpleosPage() {
                     </span>
                     <span className="inline-flex items-center gap-1">
                       <MapPin className="size-3" />
-                      {job.mode === "remoto" ? "Remoto" : `Híbrido · ${job.address}`}
+                      {job.mode === "remoto"
+                        ? "Remoto"
+                        : `Híbrido · ${job.address}`}
                     </span>
                   </div>
 

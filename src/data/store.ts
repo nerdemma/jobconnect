@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import path from 'path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import path from "path";
 
 export type Employee = {
   fullName: string;
@@ -20,9 +20,9 @@ export type Job = {
   email: string;
   phone: string;
   address: string;
-  mode: 'hibrido' | 'remoto';
-  contract: 'fulltime' | 'freelance';
-  currency: 'ARS' | 'USD';
+  mode: "hibrido" | "remoto";
+  contract: "fulltime" | "freelance";
+  currency: "ARS" | "USD";
   amount: number;
   stack: string[];
   walletAddress?: string;
@@ -33,15 +33,16 @@ export type Application = {
   applicationId: string;
   jobId: string;
   applicantEmail: string;
+  applicantWalletAddress?: string;
   profileSummary: string;
   skills: string[];
   createdAt: number;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: "pending" | "accepted" | "rejected";
 };
 
 export type WalletAccount = {
   address: string;
-  role: 'employee' | 'employer';
+  role: "employee" | "employer";
   createdAt: number;
 };
 
@@ -56,21 +57,27 @@ type StorageShape = {
   wallets: WalletAccount[];
 };
 
-const STORAGE_PATH = path.resolve(process.cwd(), 'data', 'store.json');
+const STORAGE_PATH = path.resolve(process.cwd(), "data", "store.json");
 
 function ensureStorageFile() {
   mkdirSync(path.dirname(STORAGE_PATH), { recursive: true });
   if (!existsSync(STORAGE_PATH)) {
     writeFileSync(
       STORAGE_PATH,
-      JSON.stringify({ jobs: [], employees: [], applications: [], wallets: [] }, null, 2),
+      JSON.stringify(
+        { jobs: [], employees: [], applications: [], wallets: [] },
+        null,
+        2,
+      ),
     );
   }
 }
 
 function readStorage(): StorageShape {
   ensureStorageFile();
-  const raw = JSON.parse(readFileSync(STORAGE_PATH, 'utf8')) as Partial<StorageShape>;
+  const raw = JSON.parse(
+    readFileSync(STORAGE_PATH, "utf8"),
+  ) as Partial<StorageShape>;
   return {
     jobs: raw.jobs ?? [],
     employees: raw.employees ?? [],
@@ -101,53 +108,109 @@ export function addJob(job: Job) {
 
 export function saveEmployee(employee: Employee) {
   const storage = readStorage();
-  const existingIndex = storage.employees.findIndex((item) => item.email === employee.email);
+  const normalizedWallet = employee.walletAddress?.trim().toLowerCase();
+  const existingIndex = normalizedWallet
+    ? storage.employees.findIndex(
+        (item) => item.walletAddress?.toLowerCase() === normalizedWallet,
+      )
+    : storage.employees.findIndex(
+        (item) => item.email.toLowerCase() === employee.email.toLowerCase(),
+      );
   const employees = [...storage.employees];
+  const nextEmployee = normalizedWallet
+    ? { ...employee, walletAddress: normalizedWallet }
+    : employee;
   if (existingIndex >= 0) {
-    employees[existingIndex] = employee;
+    employees[existingIndex] = nextEmployee;
   } else {
-    employees.push(employee);
+    employees.push(nextEmployee);
   }
   const next = { ...storage, employees };
   writeStorage(next);
-  return employee;
+  return nextEmployee;
 }
 
 export function getEmployeeByEmail(email: string) {
-  return readStorage().employees.find((item) => item.email === email) ?? null;
+  const normalized = email.trim().toLowerCase();
+  return (
+    readStorage().employees.find(
+      (item) => item.email.toLowerCase() === normalized,
+    ) ?? null
+  );
+}
+
+export function getEmployeeByWalletAddress(address: string) {
+  const normalized = address.trim().toLowerCase();
+  return (
+    readStorage().employees.find(
+      (item) => item.walletAddress?.toLowerCase() === normalized,
+    ) ?? null
+  );
 }
 
 export function getWalletAccountByAddress(address: string) {
   const normalized = address.trim().toLowerCase();
-  return readStorage().wallets.find((item) => item.address.toLowerCase() === normalized) ?? null;
+  return (
+    readStorage().wallets.find(
+      (item) => item.address.toLowerCase() === normalized,
+    ) ?? null
+  );
 }
 
 export function addWalletAccount(account: WalletAccount) {
   const storage = readStorage();
   const normalized = account.address.trim().toLowerCase();
-  const existing = storage.wallets.find((item) => item.address.toLowerCase() === normalized);
+  const existing = storage.wallets.find(
+    (item) => item.address.toLowerCase() === normalized,
+  );
   if (existing) {
     if (existing.role !== account.role) {
-      throw new Error('Esta wallet ya está registrada con otro rol.');
+      throw new Error("Esta wallet ya está registrada con otro rol.");
     }
     return existing;
   }
-  const next = { ...storage, wallets: [...storage.wallets, { ...account, address: normalized }] };
+  const next = {
+    ...storage,
+    wallets: [...storage.wallets, { ...account, address: normalized }],
+  };
   writeStorage(next);
   return { ...account, address: normalized };
 }
 
 export function saveApplication(application: Application) {
   const storage = readStorage();
-  const next = { ...storage, applications: [application, ...storage.applications] };
+  const next = {
+    ...storage,
+    applications: [application, ...storage.applications],
+  };
   writeStorage(next);
   return application;
 }
 
 export function getApplicationById(applicationId: string) {
-  return readStorage().applications.find((item) => item.applicationId === applicationId) ?? null;
+  return (
+    readStorage().applications.find(
+      (item) => item.applicationId === applicationId,
+    ) ?? null
+  );
 }
 
-export function toArs(amount: number, currency: 'ARS' | 'USD') {
-  return currency === 'USD' ? amount * USD_RATE : amount;
+export function updateApplicationStatus(
+  applicationId: string,
+  status: Application["status"],
+) {
+  const storage = readStorage();
+  const applications = storage.applications.map((item) =>
+    item.applicationId === applicationId ? { ...item, status } : item,
+  );
+  const updated =
+    applications.find((item) => item.applicationId === applicationId) ?? null;
+  if (!updated) return null;
+
+  writeStorage({ ...storage, applications });
+  return updated;
+}
+
+export function toArs(amount: number, currency: "ARS" | "USD") {
+  return currency === "USD" ? amount * USD_RATE : amount;
 }

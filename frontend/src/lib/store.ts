@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export type Employee = {
   fullName: string;
@@ -38,6 +38,12 @@ const KEYS = {
   applied: "w3jobs.applied",
 };
 
+function walletKey(baseKey: string, walletAddress?: string | null) {
+  return walletAddress
+    ? `${baseKey}.${walletAddress.trim().toLowerCase()}`
+    : baseKey;
+}
+
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
@@ -54,11 +60,11 @@ function write(key: string, value: unknown) {
   window.dispatchEvent(new Event("w3jobs:update"));
 }
 
-export function getEmployee() {
-  return read<Employee | null>(KEYS.employee, null);
+export function getEmployee(walletAddress?: string | null) {
+  return read<Employee | null>(walletKey(KEYS.employee, walletAddress), null);
 }
-export function saveEmployee(e: Employee) {
-  write(KEYS.employee, e);
+export function saveEmployee(e: Employee, walletAddress?: string | null) {
+  write(walletKey(KEYS.employee, walletAddress), e);
 }
 export function getJobs() {
   return read<Job[]>(KEYS.jobs, []);
@@ -73,34 +79,36 @@ export function setWallet(address: string | null) {
   write(KEYS.wallet, address);
 }
 export function getWalletRole() {
-  return read<'employee' | 'employer' | null>(KEYS.role, null);
+  return read<"employee" | "employer" | null>(KEYS.role, null);
 }
-export function setWalletRole(role: 'employee' | 'employer' | null) {
+export function setWalletRole(role: "employee" | "employer" | null) {
   write(KEYS.role, role);
 }
-export function getApplied() {
-  return read<string[]>(KEYS.applied, []);
+export function getApplied(walletAddress?: string | null) {
+  return read<string[]>(walletKey(KEYS.applied, walletAddress), []);
 }
-export function addApplied(id: string) {
-  const list = getApplied();
-  if (!list.includes(id)) write(KEYS.applied, [...list, id]);
+export function addApplied(id: string, walletAddress?: string | null) {
+  const key = walletKey(KEYS.applied, walletAddress);
+  const list = read<string[]>(key, []);
+  if (!list.includes(id)) write(key, [...list, id]);
 }
 
 /** Subscribes any component to the local store. */
 export function useStore<T>(selector: () => T, initial: T): T {
-  const [value, setValue] = useState<T>(initial);
-  useEffect(() => {
-    const sync = () => setValue(selector());
-    sync();
-    window.addEventListener("w3jobs:update", sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener("w3jobs:update", sync);
-      window.removeEventListener("storage", sync);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  return value;
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === "undefined") return () => {};
+
+      window.addEventListener("w3jobs:update", onStoreChange);
+      window.addEventListener("storage", onStoreChange);
+      return () => {
+        window.removeEventListener("w3jobs:update", onStoreChange);
+        window.removeEventListener("storage", onStoreChange);
+      };
+    },
+    selector,
+    () => initial,
+  );
 }
 
 export function toArs(amount: number, currency: "ARS" | "USD") {

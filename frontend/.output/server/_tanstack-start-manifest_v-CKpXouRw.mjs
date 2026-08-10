@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-Cuv-nh4B.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-CKpXouRw.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "/home/emmanuel/projects/hackathon/midnight/jobconnect/frontend/src/routes/__root.tsx",
@@ -9,54 +9,54 @@ var tsrStartManifest = () => ({ routes: {
 			"/empresario",
 			"/rol"
 		],
-		preloads: ["/assets/index-BgWYsLqd.js"],
+		preloads: ["/assets/index-Ik11bpsE.js"],
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-BgWYsLqd.js"
+			src: "/assets/index-Ik11bpsE.js"
 		} }]
 	},
 	"/": {
 		filePath: "/home/emmanuel/projects/hackathon/midnight/jobconnect/frontend/src/routes/index.tsx",
 		children: void 0,
-		preloads: ["/assets/routes-D8QeB2d1.js", "/assets/Navbar-DOMSwdFW.js"]
+		preloads: ["/assets/routes-C5CLhvya.js", "/assets/Navbar-Bq33-FlS.js"]
 	},
 	"/empleado": {
 		filePath: "/home/emmanuel/projects/hackathon/midnight/jobconnect/frontend/src/routes/empleado.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/empleado-BwpOaJoA.js",
-			"/assets/Navbar-DOMSwdFW.js",
-			"/assets/label-CX1k3sry.js",
-			"/assets/api-Dojm6Nyu.js"
+			"/assets/empleado-BCCReJOQ.js",
+			"/assets/Navbar-Bq33-FlS.js",
+			"/assets/label-CCC3vftQ.js",
+			"/assets/api-Cg-BRZVC.js"
 		]
 	},
 	"/empleos": {
 		filePath: "/home/emmanuel/projects/hackathon/midnight/jobconnect/frontend/src/routes/empleos.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/empleos-qWPo5BGs.js",
-			"/assets/Navbar-DOMSwdFW.js",
-			"/assets/api-Dojm6Nyu.js"
+			"/assets/empleos-OjQxTaxU.js",
+			"/assets/Navbar-Bq33-FlS.js",
+			"/assets/api-Cg-BRZVC.js"
 		]
 	},
 	"/empresario": {
 		filePath: "/home/emmanuel/projects/hackathon/midnight/jobconnect/frontend/src/routes/empresario.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/empresario-BxutXUIC.js",
-			"/assets/Navbar-DOMSwdFW.js",
-			"/assets/label-CX1k3sry.js",
-			"/assets/api-Dojm6Nyu.js"
+			"/assets/empresario-vPWapayw.js",
+			"/assets/Navbar-Bq33-FlS.js",
+			"/assets/label-CCC3vftQ.js",
+			"/assets/api-Cg-BRZVC.js"
 		]
 	},
 	"/rol": {
 		filePath: "/home/emmanuel/projects/hackathon/midnight/jobconnect/frontend/src/routes/rol.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/rol-Ccgd_t_P.js",
-			"/assets/Navbar-DOMSwdFW.js",
-			"/assets/api-Dojm6Nyu.js"
+			"/assets/rol-DUmwGCzf.js",
+			"/assets/Navbar-Bq33-FlS.js",
+			"/assets/api-Cg-BRZVC.js"
 		]
 	}
 } });

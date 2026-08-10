@@ -1,7 +1,7 @@
 import { o as require_jsx_runtime } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { v as useNavigate } from "../_libs/@tanstack/react-router+[...].mjs";
-import { h as useWallet, i as Navbar, t as Button } from "./Navbar-B8YV-LUC.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BV8LNdw9.js
+import { h as useWallet, i as Navbar, t as Button } from "./Navbar-Q-Z7NG4L.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-CDMu-6fQ.js
 var import_jsx_runtime = require_jsx_runtime();
 function Index() {
 	const { address, role } = useWallet();

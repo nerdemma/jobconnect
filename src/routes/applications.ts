@@ -1,38 +1,70 @@
 // src/routes/applications.ts
-import { Router, Request, Response } from 'express';
-import { verifyActionToken } from '../services/tokenService';
-import { MidnightService } from '../services/midnightService';
+import { Router, Request, Response } from "express";
+import { verifyActionToken } from "../services/tokenService";
+import { MidnightService } from "../services/midnightService";
 import {
   getJobById,
   saveApplication,
   getApplicationById,
+  updateApplicationStatus,
   MIN_FULLTIME_ARS,
   MIN_FREELANCE_HOUR_ARS,
-} from '../data/store';
-import { sendEmployerNotification, sendApplicantStatusEmail } from '../services/mailer';
+} from "../data/store";
+import {
+  sendEmployerNotification,
+  sendApplicantStatusEmail,
+} from "../services/mailer";
 
 const router = Router();
 
 // Endpoint de postulación para el Frontend
-router.post('/apply', async (req: Request, res: Response) => {
+router.post("/apply", async (req: Request, res: Response) => {
   try {
-    const { jobId, applicantEmail, profileSummary, skills, zkpProof } = req.body;
+    const {
+      jobId,
+      applicantEmail,
+      applicantWalletAddress,
+      profileSummary,
+      skills,
+      zkpProof,
+    } = req.body;
 
-    if (!jobId || !applicantEmail || !profileSummary || !Array.isArray(skills) || !zkpProof) {
-      return res.status(400).json({ error: 'Faltan parámetros requeridos (jobId, applicantEmail, profileSummary, skills, zkpProof).' });
+    if (
+      !jobId ||
+      !applicantEmail ||
+      !profileSummary ||
+      !Array.isArray(skills) ||
+      !zkpProof
+    ) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Faltan parámetros requeridos (jobId, applicantEmail, profileSummary, skills, zkpProof).",
+        });
     }
 
     const job = getJobById(jobId);
     if (!job) {
-      return res.status(404).json({ error: 'Aviso de trabajo no encontrado.' });
+      return res.status(404).json({ error: "Aviso de trabajo no encontrado." });
     }
 
-    const minimumSalary = job.contract === 'fulltime' ? MIN_FULLTIME_ARS : MIN_FREELANCE_HOUR_ARS;
+    const minimumSalary =
+      job.contract === "fulltime" ? MIN_FULLTIME_ARS : MIN_FREELANCE_HOUR_ARS;
     const midnightService = MidnightService.getInstance();
-    const proofIsValid = await midnightService.verifyApplicationProof(zkpProof, minimumSalary);
+    const proofIsValid = await midnightService.verifyApplicationProof(
+      zkpProof,
+      minimumSalary,
+      job.currency,
+    );
 
     if (!proofIsValid) {
-      return res.status(400).json({ error: 'La prueba ZKP no es válida o no cumple con el requisito de salario mínimo.' });
+      return res
+        .status(400)
+        .json({
+          error:
+            "La prueba ZKP no es válida o no cumple con el requisito de salario mínimo.",
+        });
     }
 
     const applicationId = `app_${Date.now()}`;
@@ -40,46 +72,69 @@ router.post('/apply', async (req: Request, res: Response) => {
       applicationId,
       jobId,
       applicantEmail,
+      applicantWalletAddress:
+        typeof applicantWalletAddress === "string"
+          ? applicantWalletAddress.trim().toLowerCase()
+          : undefined,
       profileSummary,
       skills,
       createdAt: Date.now(),
-      status: 'pending',
+      status: "pending",
     });
 
-    await sendEmployerNotification(job.email, applicationId, jobId, profileSummary, skills);
+    await sendEmployerNotification(
+      job.email,
+      applicationId,
+      jobId,
+      profileSummary,
+      skills,
+    );
 
     return res.status(200).json({
       success: true,
-      message: 'Postulación procesada correctamente con validación ZKP.',
+      message: "Postulación procesada correctamente con validación ZKP.",
       applicationId,
     });
   } catch (error) {
-    console.error('Error al procesar la postulación:', error);
-    return res.status(500).json({ error: 'Error interno al procesar la postulación.' });
+    console.error("Error al procesar la postulación:", error);
+    return res
+      .status(500)
+      .json({ error: "Error interno al procesar la postulación." });
   }
 });
 
 // Endpoint de decisión del empleador
-router.get('/decision', async (req: Request, res: Response) => {
+router.get("/decision", async (req: Request, res: Response) => {
   const token = req.query.token as string;
 
   if (!token) {
-    return res.status(400).send('<h2>Error: Token de acción no proporcionado.</h2>');
+    return res
+      .status(400)
+      .send("<h2>Error: Token de acción no proporcionado.</h2>");
   }
 
   try {
     const payload = verifyActionToken(token);
-    const accepted = payload.action === 'accept';
+    const accepted = payload.action === "accept";
 
     const application = getApplicationById(payload.applicationId);
     if (!application) {
-      return res.status(404).send('<h2>Error: Aplicación no encontrada.</h2>');
+      return res.status(404).send("<h2>Error: Aplicación no encontrada.</h2>");
     }
 
-    application.status = accepted ? 'accepted' : 'rejected';
+    const updatedApplication = updateApplicationStatus(
+      application.applicationId,
+      accepted ? "accepted" : "rejected",
+    );
+    if (!updatedApplication) {
+      return res.status(404).send("<h2>Error: Aplicación no encontrada.</h2>");
+    }
 
-    await sendApplicantStatusEmail(application.applicantEmail, accepted).catch((mailError) => {
-      console.error('Error enviando notificación al postulante:', mailError);
+    await sendApplicantStatusEmail(
+      updatedApplication.applicantEmail,
+      accepted,
+    ).catch((mailError) => {
+      console.error("Error enviando notificación al postulante:", mailError);
     });
 
     if (accepted) {
@@ -102,8 +157,8 @@ router.get('/decision', async (req: Request, res: Response) => {
       </div>
     `);
   } catch (error) {
-    console.error('Error al procesar decisión de postulación:', error);
-    return res.status(400).send('<h2>Error: Token inválido o expirado.</h2>');
+    console.error("Error al procesar decisión de postulación:", error);
+    return res.status(400).send("<h2>Error: Token inválido o expirado.</h2>");
   }
 });
 

@@ -5,7 +5,7 @@ import { n as toast } from "../_libs/sonner.mjs";
 import { n as Sun, r as Moon, t as Wallet } from "../_libs/lucide-react.mjs";
 import { n as clsx, t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/Navbar-B8YV-LUC.js
+//#region node_modules/.nitro/vite/services/ssr/assets/Navbar-Q-Z7NG4L.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function cn(...inputs) {
@@ -74,6 +74,9 @@ var KEYS = {
 	role: "w3jobs.role",
 	applied: "w3jobs.applied"
 };
+function walletKey(baseKey, walletAddress) {
+	return walletAddress ? `${baseKey}.${walletAddress.trim().toLowerCase()}` : baseKey;
+}
 function read(key, fallback) {
 	if (typeof window === "undefined") return fallback;
 	try {
@@ -88,11 +91,11 @@ function write(key, value) {
 	window.localStorage.setItem(key, JSON.stringify(value));
 	window.dispatchEvent(new Event("w3jobs:update"));
 }
-function getEmployee() {
-	return read(KEYS.employee, null);
+function getEmployee(walletAddress) {
+	return read(walletKey(KEYS.employee, walletAddress), null);
 }
-function saveEmployee(e) {
-	write(KEYS.employee, e);
+function saveEmployee(e, walletAddress) {
+	write(walletKey(KEYS.employee, walletAddress), e);
 }
 function getWallet() {
 	return read(KEYS.wallet, null);
@@ -106,15 +109,16 @@ function getWalletRole() {
 function setWalletRole(role) {
 	write(KEYS.role, role);
 }
-function getApplied() {
-	return read(KEYS.applied, []);
+function getApplied(walletAddress) {
+	return read(walletKey(KEYS.applied, walletAddress), []);
 }
-function addApplied(id) {
-	const list = getApplied();
-	if (!list.includes(id)) write(KEYS.applied, [...list, id]);
+function addApplied(id, walletAddress) {
+	const key = walletKey(KEYS.applied, walletAddress);
+	const list = read(key, []);
+	if (!list.includes(id)) write(key, [...list, id]);
 }
 /** Subscribes any component to the local store. */
-function useStore(selector, initial) {
+function useStore(selector, initial, deps = []) {
 	const [value, setValue] = (0, import_react.useState)(initial);
 	(0, import_react.useEffect)(() => {
 		const sync = () => setValue(selector());
@@ -125,7 +129,7 @@ function useStore(selector, initial) {
 			window.removeEventListener("w3jobs:update", sync);
 			window.removeEventListener("storage", sync);
 		};
-	}, []);
+	}, deps);
 	return value;
 }
 function toArs(amount, currency) {
@@ -139,52 +143,47 @@ function formatMoney(amount, currency) {
 	}).format(amount);
 }
 function useWallet() {
-	const address = useStore(() => getWallet(), null);
-	const role = useStore(() => getWalletRole(), null);
-	const connect = async () => {
-		const eth = window.ethereum;
-		if (!eth || typeof eth.request !== "function") {
-			const demo = "0x" + Array.from({ length: 40 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
-			setWallet(demo);
-			setWalletRole(null);
-			return {
-				address: demo,
-				demo: true
-			};
-		}
-		let accounts = null;
-		try {
-			accounts = await eth.request({
-				method: "eth_requestAccounts",
-				params: []
-			});
-		} catch (error) {
-			if (error?.code === 4001) throw new Error("Conexión rechazada por el usuario.");
-			throw error;
-		}
-		const addr = accounts?.[0] ?? null;
-		if (!addr) throw new Error("No se obtuvo una dirección de wallet.");
-		const previousAddress = getWallet();
-		setWallet(addr);
-		if (addr && previousAddress && previousAddress.toLowerCase() !== addr.toLowerCase()) setWalletRole(null);
-		return {
-			address: addr,
-			demo: false
-		};
-	};
-	const disconnect = () => {
-		setWallet(null);
-		setWalletRole(null);
-	};
-	const setRole = (newRole) => {
-		setWalletRole(newRole);
-	};
 	return {
-		address,
-		role,
-		connect,
-		disconnect,
-		setRole
+		address: useStore(() => getWallet(), null),
+		role: useStore(() => getWalletRole(), null),
+		connect: (0, import_react.useCallback)(async () => {
+			const eth = window.ethereum;
+			if (!eth || typeof eth.request !== "function") {
+				const demo = "0x" + Array.from({ length: 40 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
+				setWallet(demo);
+				setWalletRole(null);
+				return {
+					address: demo,
+					demo: true
+				};
+			}
+			let accounts = null;
+			try {
+				accounts = await eth.request({
+					method: "eth_requestAccounts",
+					params: []
+				});
+			} catch (error) {
+				if (error?.code === 4001) throw new Error("Conexión rechazada por el usuario.");
+				throw error;
+			}
+			const addr = accounts?.[0] ?? null;
+			if (!addr) throw new Error("No se obtuvo una dirección de wallet.");
+			const previousAddress = getWallet();
+			setWallet(addr);
+			if (addr && previousAddress && previousAddress.toLowerCase() !== addr.toLowerCase()) setWalletRole(null);
+			return {
+				address: addr,
+				demo: false
+			};
+		}, []),
+		disconnect: (0, import_react.useCallback)(() => {
+			setWallet(null);
+			setWalletRole(null);
+		}, []),
+		setRole: (0, import_react.useCallback)((newRole) => {
+			setWalletRole(newRole);
+		}, [])
 	};
 }
 function shortAddress(a) {

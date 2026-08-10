@@ -3,17 +3,18 @@ import { o as require_jsx_runtime, s as require_react } from "../_libs/@radix-ui
 import { _ as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as toast } from "../_libs/sonner.mjs";
 import { a as Clock, i as MapPin, s as Building2 } from "../_libs/lucide-react.mjs";
-import { c as formatMoney, i as Navbar, l as getApplied, m as useStore, o as addApplied, t as Button, u as getEmployee } from "./Navbar-B8YV-LUC.mjs";
-import { r as fetchJobs, t as applyToJob } from "./api-k-Zx6zwJ.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/empleos-Dmh0f4QJ.js
+import { c as formatMoney, d as saveEmployee, h as useWallet, i as Navbar, l as getApplied, m as useStore, o as addApplied, t as Button, u as getEmployee } from "./Navbar-Q-Z7NG4L.mjs";
+import { i as fetchJobs, r as fetchEmployee, t as applyToJob } from "./api-CVeEec0_.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/empleos-CO3RVpcC.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function EmpleosPage() {
-	const employee = useStore(() => getEmployee(), null);
+	const { address } = useWallet();
+	const employee = useStore(() => getEmployee(address), null, [address]);
 	const [jobs, setJobs] = (0, import_react.useState)([]);
 	const [loading, setLoading] = (0, import_react.useState)(true);
 	const [error, setError] = (0, import_react.useState)(null);
-	const applied = useStore(() => getApplied(), []);
+	const applied = useStore(() => getApplied(address), [], [address]);
 	(0, import_react.useEffect)(() => {
 		const loadJobs = async () => {
 			try {
@@ -29,7 +30,13 @@ function EmpleosPage() {
 		};
 		loadJobs();
 	}, []);
-	if (!employee) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+	(0, import_react.useEffect)(() => {
+		if (!address) return;
+		fetchEmployee(address).then((profile) => {
+			saveEmployee(profile, address);
+		}).catch(() => {});
+	}, [address]);
+	if (!address || !employee) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "min-h-screen bg-background",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navbar, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
 			className: "mx-auto max-w-3xl px-6 py-24 text-center",
@@ -40,7 +47,7 @@ function EmpleosPage() {
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "mt-2 text-sm text-muted-foreground",
-					children: "Solo los perfiles con stack cargado acceden a las publicaciones."
+					children: "Conectá tu wallet y cargá tu stack para acceder a las publicaciones."
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: "/empleado",
@@ -71,11 +78,12 @@ function EmpleosPage() {
 			await applyToJob({
 				jobId: job.id,
 				applicantEmail: employee.email,
+				applicantWalletAddress: address,
 				profileSummary,
 				skills: employee.stack,
 				zkpProof
 			});
-			addApplied(job.id);
+			addApplied(job.id, address);
 			toast.success("Postulación enviada al empleador");
 		} catch (error) {
 			toast.error(error.message || "No se pudo enviar la postulación.");
@@ -96,10 +104,10 @@ function EmpleosPage() {
 						jobs.length,
 						" aviso",
 						jobs.length === 1 ? "" : "s",
-						" · tu stack: ",
-						employee.stack.length,
+						" · tu stack:",
 						" ",
-						"tecnologías"
+						employee.stack.length,
+						" tecnologías"
 					]
 				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: "/empresario",

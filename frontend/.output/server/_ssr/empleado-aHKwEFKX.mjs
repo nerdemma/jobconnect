@@ -2,10 +2,10 @@ import { n as __toESM } from "../_runtime.mjs";
 import { o as require_jsx_runtime, s as require_react } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { v as useNavigate } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { d as saveEmployee, h as useWallet, i as Navbar, m as useStore, s as cn, t as Button, u as getEmployee } from "./Navbar-B8YV-LUC.mjs";
-import { n as Label, r as StackPicker, t as Input } from "./label-CO2vJS3b.mjs";
-import { a as postEmployee, i as fetchWalletRole } from "./api-k-Zx6zwJ.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/empleado-C-qEibeN.js
+import { d as saveEmployee, h as useWallet, i as Navbar, m as useStore, s as cn, t as Button, u as getEmployee } from "./Navbar-Q-Z7NG4L.mjs";
+import { n as Label, r as StackPicker, t as Input } from "./label-DlK7PMTF.mjs";
+import { a as fetchWalletRole, o as postEmployee, r as fetchEmployee } from "./api-CVeEec0_.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/empleado-aHKwEFKX.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
@@ -30,8 +30,8 @@ function isValidGithubUrl(value) {
 }
 function EmpleadoPage() {
 	const navigate = useNavigate();
-	const saved = useStore(() => getEmployee(), null);
 	const { address, role, setRole } = useWallet();
+	const saved = useStore(() => getEmployee(address), null, [address]);
 	const [stack, setStack] = (0, import_react.useState)([]);
 	const [form, setForm] = (0, import_react.useState)({
 		fullName: "",
@@ -54,6 +54,35 @@ function EmpleadoPage() {
 		role,
 		setRole
 	]);
+	(0, import_react.useEffect)(() => {
+		if (!address || role !== "employee") return;
+		fetchEmployee(address).then((employee) => {
+			saveEmployee(employee, address);
+			setForm({
+				fullName: employee.fullName,
+				email: employee.email,
+				phone: employee.phone,
+				dni: employee.dni,
+				address: employee.address,
+				about: employee.about,
+				github: employee.github
+			});
+			setStack(employee.stack);
+		}).catch(() => {
+			const cached = getEmployee(address);
+			if (!cached) return;
+			setForm({
+				fullName: cached.fullName,
+				email: cached.email,
+				phone: cached.phone,
+				dni: cached.dni,
+				address: cached.address,
+				about: cached.about,
+				github: cached.github
+			});
+			setStack(cached.stack);
+		});
+	}, [address, role]);
 	const submit = async (e) => {
 		e.preventDefault();
 		if (!address) {
@@ -81,7 +110,7 @@ function EmpleadoPage() {
 			saveEmployee({
 				...form,
 				stack
-			});
+			}, address);
 			toast.success("Perfil registrado");
 			navigate({ to: "/empleos" });
 		} catch (error) {
